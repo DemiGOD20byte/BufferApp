@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Buffer — AI Cash-Flow Copilot</title>
+
+<!-- React + ReactDOM (UMD builds) + Babel standalone (JSX transform), served from cdnjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+html, body { margin: 0; padding: 0; background: #0D1B22; font-family: 'Inter', sans-serif; }
+
+/* Base reset + font utility classes (match the artifact version) */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input { font: inherit; color: inherit; }
+.font-display { font-family: 'Space Grotesk', sans-serif; }
+.font-body { font-family: 'Inter', sans-serif; }
+.font-mono { font-family: 'IBM Plex Mono', monospace; }
+.font-sans { font-family: 'Inter', sans-serif; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
+@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+.animate-ping { animation: ping 1s cubic-bezier(0,0,0.2,1) infinite; }
+
+.-mt-2 { margin-top: -0.5rem; }
+.absolute { position: absolute; }
+.bg-\[\#0D1B22\] { background-color: #0D1B22; }
+.bg-\[\#132732\] { background-color: #132732; }
+.bg-\[\#3FA796\] { background-color: #3FA796; }
+.bg-\[\#3FA796\]\/10 { background-color: rgba(63, 167, 150, 0.100); }
+.bg-\[\#D8B25E\] { background-color: #D8B25E; }
+.bg-\[\#D8B25E\]\/10 { background-color: rgba(216, 178, 94, 0.100); }
+.bg-\[\#D8B25E\]\/5 { background-color: rgba(216, 178, 94, 0.050); }
+.bg-transparent { background-color: transparent; }
+.bg-white\/10 { background-color: rgba(255, 255, 255, 0.100); }
+.bg-white\/5 { background-color: rgba(255, 255, 255, 0.050); }
+.block { display: block; }
+.border { border-width: 1px; border-style: solid; }
+.border-\[\#3FA796\]\/30 { border-color: rgba(63, 167, 150, 0.300); }
+.border-\[\#D8B25E\]\/30 { border-color: rgba(216, 178, 94, 0.300); }
+.border-\[\#D8B25E\]\/40 { border-color: rgba(216, 178, 94, 0.400); }
+.border-\[\#F2726F\]\/70 { border-color: rgba(242, 114, 111, 0.700); }
+.border-dashed { border-style: dashed; }
+.border-t { border-top-width: 1px; border-top-style: solid; }
+.border-white\/10 { border-color: rgba(255, 255, 255, 0.100); }
+.border-white\/5 { border-color: rgba(255, 255, 255, 0.050); }
+.bottom-0 { bottom: 0; }
+.break-all { word-break: break-all; }
+.cursor-pointer { cursor: pointer; }
+.disabled\:bg-\[\#3FA796\]\/25:disabled { background-color: rgba(63, 167, 150, 0.250); }
+.disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+.disabled\:hover\:bg-\[\#3FA796\]\/25:disabled:hover { background-color: rgba(63, 167, 150, 0.250); }
+.disabled\:hover\:bg-white\/5:disabled:hover { background-color: rgba(255, 255, 255, 0.050); }
+.disabled\:opacity-30:disabled { opacity: 0.3; }
+.disabled\:opacity-60:disabled { opacity: 0.6; }
+.duration-500 { transition-duration: 500ms; }
+.ease-out { transition-timing-function: cubic-bezier(0,0,0.2,1); }
+.flex { display: flex; }
+.flex-1 { flex: 1 1 0%; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.focus-within\:border-\[\#3FA796\]\/50:focus-within { border-color: rgba(63, 167, 150, 0.500); }
+.focus\:border-\[\#3FA796\]\/50:focus { border-color: rgba(63, 167, 150, 0.500); }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.gap-0\.5 { gap: 0.125rem; }
+.gap-1 { gap: 0.25rem; }
+.gap-1\.5 { gap: 0.375rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-2\.5 { gap: 0.625rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-5 { gap: 1.25rem; }
+.gap-6 { gap: 1.5rem; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.h-10 { height: 2.5rem; }
+.h-11 { height: 2.75rem; }
+.h-12 { height: 3rem; }
+.h-14 { height: 3.5rem; }
+.h-2 { height: 0.5rem; }
+.h-40 { height: 10rem; }
+.h-9 { height: 2.25rem; }
+.h-full { height: 100%; }
+.h-px { height: 1px; }
+.hidden { display: none; }
+.hover\:bg-\[\#379186\]:hover { background-color: #379186; }
+.hover\:bg-\[\#c6a253\]:hover { background-color: #c6a253; }
+.hover\:bg-\[\#e6c076\]:hover { background-color: #e6c076; }
+.hover\:bg-white\/10:hover { background-color: rgba(255, 255, 255, 0.100); }
+.hover\:border-white\/15:hover { border-color: rgba(255, 255, 255, 0.150); }
+.hover\:text-\[\#EAF4F1\]:hover { color: #EAF4F1; }
+.hover\:underline:hover { text-decoration: underline; }
+.inline-flex { display: inline-flex; }
+.italic { font-style: italic; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.leading-relaxed { line-height: 1.625; }
+.leading-snug { line-height: 1.375; }
+.left-0 { left: 0; }
+.max-w-2xl { max-width: 42rem; }
+.max-w-5xl { max-width: 64rem; }
+.max-w-md { max-width: 28rem; }
+.max-w-sm { max-width: 24rem; }
+.max-w-xs { max-width: 20rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-10 { margin-bottom: 2.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-5 { margin-bottom: 1.25rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+@media (min-width: 768px) { .md\:grid-cols-\[1\.1fr_1fr\] { grid-template-columns: 1.1fr 1fr; } }
+.min-h-screen { min-height: 100vh; }
+.ml-2 { margin-left: 0.5rem; }
+.ml-auto { margin-left: auto; }
+.mt-0\.5 { margin-top: 0.125rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-5 { margin-top: 1.25rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.opacity-60 { opacity: 0.6; }
+.outline-none { outline: none; }
+.overflow-hidden { overflow: hidden; }
+.p-1 { padding: 0.25rem; }
+.p-10 { padding: 2.5rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.p-7 { padding: 1.75rem; }
+.placeholder\:text-\[\#4F6373\]::placeholder { color: #4F6373; }
+.pt-0\.5 { padding-top: 0.125rem; }
+.px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-3\.5 { padding-left: 0.875rem; padding-right: 0.875rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.relative { position: relative; }
+.right-0 { right: 0; }
+.rounded { border-radius: 0.25rem; }
+.rounded-2xl { border-radius: 1rem; }
+.rounded-full { border-radius: 9999px; }
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-md { border-radius: 0.375rem; }
+.rounded-xl { border-radius: 0.75rem; }
+.shadow-\[0_0_0_1px_rgba\(216\,178\,94\,0\.4\)\,0_0_24px_rgba\(216\,178\,94\,0\.35\)\] { box-shadow: 0 0 0 1px rgba(216,178,94,0.4),0 0 24px rgba(216,178,94,0.35); }
+.shrink-0 { flex-shrink: 0; }
+@media (min-width: 640px) { .sm\:inline { display: inline; } }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-\[\#0D1B22\] { color: #0D1B22; }
+.text-\[\#3FA796\] { color: #3FA796; }
+.text-\[\#4F6373\] { color: #4F6373; }
+.text-\[\#7C93A6\] { color: #7C93A6; }
+.text-\[\#C7D6D2\] { color: #C7D6D2; }
+.text-\[\#D8B25E\] { color: #D8B25E; }
+.text-\[\#EAF4F1\] { color: #EAF4F1; }
+.text-\[\#F2726F\] { color: #F2726F; }
+.text-\[10px\] { font-size: 10px; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.tracking-\[0\.5em\] { letter-spacing: 0.5em; }
+.tracking-tight { letter-spacing: -0.025em; }
+.tracking-wider { letter-spacing: 0.05em; }
+.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4,0,0.2,1); transition-duration: 150ms; }
+.transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4,0,0.2,1); transition-duration: 150ms; }
+.uppercase { text-transform: uppercase; }
+.w-10 { width: 2.5rem; }
+.w-11 { width: 2.75rem; }
+.w-12 { width: 3rem; }
+.w-14 { width: 3.5rem; }
+.w-2 { width: 0.5rem; }
+.w-9 { width: 2.25rem; }
+.w-full { width: 100%; }
+.whitespace-nowrap { white-space: nowrap; }</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useCallback, useRef, useEffect } = React;
+
+// Self-contained icon set (24x24, stroke-based, lucide-style) so the app has
+// zero dependency on an icon library — everything needed is inlined below.
+const ICONS = {
+  droplets: <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />,
+  "trending-down": (
+    <>
+      <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
+      <polyline points="16 17 22 17 22 11" />
+    </>
+  ),
+  "shield-check": (
+    <>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <polyline points="9 12 12 15 16 10" />
+    </>
+  ),
+  zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
+  "rotate-ccw": (
+    <>
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+    </>
+  ),
+  "chevron-right": <polyline points="9 18 15 12 9 6" />,
+  "chevron-left": <polyline points="15 18 9 12 15 6" />,
+  briefcase: (
+    <>
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </>
+  ),
+  "graduation-cap": (
+    <>
+      <path d="M22 10L12 5 2 10l10 5 10-5z" />
+      <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5" />
+    </>
+  ),
+  laptop: (
+    <>
+      <rect x="3" y="4" width="18" height="12" rx="1" />
+      <path d="M2 20h20" />
+    </>
+  ),
+  store: (
+    <>
+      <path d="M3 9l1-5h16l1 5" />
+      <path d="M3 9a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0" />
+      <path d="M5 9v10h14V9" />
+    </>
+  ),
+  loader: (
+    <>
+      <line x1="12" y1="2" x2="12" y2="6" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+      <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+      <line x1="2" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="22" y2="12" />
+      <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
+      <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+    </>
+  ),
+  sparkles: (
+    <>
+      <path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z" />
+      <path d="M19 3v3" />
+      <path d="M20.5 4.5h-3" />
+      <path d="M5 17v3" />
+      <path d="M6.5 18.5h-3" />
+    </>
+  ),
+  wallet: (
+    <>
+      <path d="M21 12V8H6a2 2 0 0 1 0-4h12v4" />
+      <path d="M3 6v13a2 2 0 0 0 2 2h15v-5" />
+      <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+    </>
+  ),
+  "arrow-down-to-line": (
+    <>
+      <line x1="12" y1="3" x2="12" y2="15" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="5" y1="21" x2="19" y2="21" />
+    </>
+  ),
+  "arrow-up-from-line": (
+    <>
+      <line x1="12" y1="21" x2="12" y2="9" />
+      <polyline points="7 14 12 9 17 14" />
+      <line x1="5" y1="3" x2="19" y2="3" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </>
+  ),
+  check: <polyline points="20 6 9 17 4 12" />,
+  landmark: (
+    <>
+      <line x1="3" y1="22" x2="21" y2="22" />
+      <line x1="6" y1="18" x2="6" y2="11" />
+      <line x1="10" y1="18" x2="10" y2="11" />
+      <line x1="14" y1="18" x2="14" y2="11" />
+      <line x1="18" y1="18" x2="18" y2="11" />
+      <polygon points="12 2 20 7 4 7" />
+    </>
+  ),
+  "arrow-down-circle": (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="8 12 12 16 16 12" />
+      <line x1="12" y1="8" x2="12" y2="16" />
+    </>
+  ),
+  phone: (
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+  ),
+  lock: (
+    <>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </>
+  ),
+  "key-round": (
+    <>
+      <circle cx="7.5" cy="15.5" r="4.5" />
+      <path d="M10.8 12.2L20 3" />
+      <path d="M16 6l3 3" />
+      <path d="M13.5 8.5l3 3" />
+    </>
+  ),
+  fingerprint: (
+    <>
+      <path d="M12 4a8 8 0 0 1 8 8" />
+      <path d="M4 12a8 8 0 0 1 8-8" />
+      <path d="M12 11c0 3-1 5-2 6" />
+      <path d="M8 12c0 3-1 4-2 5" />
+      <path d="M16 11c0 4 1 6 2 7" />
+    </>
+  ),
+  "message-square": <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+  "credit-card": (
+    <>
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+      <line x1="1" y1="10" x2="23" y2="10" />
+    </>
+  ),
+  chrome: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <line x1="21.17" y1="8" x2="12" y2="8" />
+      <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
+      <line x1="10.88" y1="21.94" x2="15.46" y2="14" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M22 6l-10 7L2 6" />
+    </>
+  ),
+  "piggy-bank": (
+    <>
+      <path d="M19 5c-1.5-1.4-3.8-2-6-2-4.4 0-8 2.7-8 7 0 1.6.5 3 1.4 4.1L5 18h3.5l.9-1.1c.8.2 1.7.3 2.6.3 4.4 0 8-2.7 8-7 0-.7-.1-1.4-.3-2L21 7l-2-2z" />
+      <path d="M2 9v3" />
+      <circle cx="16" cy="10" r="0.5" fill="currentColor" />
+    </>
+  ),
+  percent: (
+    <>
+      <line x1="19" y1="5" x2="5" y2="19" />
+      <circle cx="6.5" cy="6.5" r="2.5" />
+      <circle cx="17.5" cy="17.5" r="2.5" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </>
+  ),
+};
+
+function Icon({ name, size = 16, className = "", strokeWidth = 2 }) {
+  const shape = ICONS[name];
+  if (!shape) return null;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {shape}
+    </svg>
+  );
+}
+
+// Hand-rolled sparkline (no charting library dependency) — mirrors the
+// recharts line the artifact version used: same padded min/max domain.
+function Sparkline({ data }) {
+  if (!data || data.length < 2) return null;
+  const values = data.map((d) => d.balance);
+  const min = Math.min(...values) - 1000;
+  const max = Math.max(...values) + 1000;
+  const range = max - min || 1;
+  const w = 300;
+  const h = 48;
+  const points = data
+    .map((d, i) => {
+      const x = (i / (data.length - 1)) * w;
+      const y = h - ((d.balance - min) / range) * h;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-full">
+      <polyline points={points} fill="none" stroke="#3FA796" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Buffer — AI cash-flow copilot demo
+// Sign up / log in (phone + password, OTP for new accounts, PIN for
+// returning ones) -> Tier 2 KYC via BVN/NIN for new accounts -> income
+// source onboarding -> dashboard with a rule-based runway prediction, a
+// real Claude API call for natural-language nudges, a simulated USDT wallet
+// (receive, send, and a single withdraw action that converts USDT to naira
+// at 0.5% and credits a linked bank directly), and a bank-link page.
+// "Available balance" represents the linked bank account, so a withdrawal
+// both debits the USDT wallet and credits that balance with the net naira
+// amount.
+// ---------------------------------------------------------------------------
+
+const CYCLE_LENGTH = 30;
+const LOCK_RATE = 0.12;
+const DAILY_BASE_SPEND = 1350;
+const FEE_RATE = 0.005; // 0.5% exchange / release fee
+const USDT_NGN_RATE = 1550; // demo rate, ₦ per USDT
+const WALLET_ADDRESS = "TXk3F9mQ2vNc8pL1rWubZ7yA4hDstEoQ2R";
+const SPEND_PROFILE = [
+  3.2, 2.8, 2.6, 2.4, 2.0, 1.8, 1.6, 1.4, 1.3, 1.2,
+  1.1, 1.0, 1.0, 0.9, 0.9, 0.8, 0.8, 0.7, 0.7, 0.6,
+  0.6, 0.5, 0.5, 0.5, 0.4, 0.4, 0.4, 0.4, 0.3, 0.3,
+];
+
+const INCOME_SOURCES = [
+  { id: "allowance", label: "Campus allowance", icon: "graduation-cap", amount: 45000, cadence: "Termly, in one lump sum" },
+  { id: "freelance", label: "Freelance / gig work", icon: "laptop", amount: 68000, cadence: "Irregular, per project" },
+  { id: "job", label: "Payday job", icon: "briefcase", amount: 90000, cadence: "Monthly, fixed date" },
+  { id: "vendor", label: "Small business / trading", icon: "store", amount: 55000, cadence: "Weekly, variable" },
+];
+
+const BANKS = ["GTBank", "Access Bank", "Zenith Bank", "UBA", "Kuda", "Opay"];
+
+const SAVINGS_PERCENT_PRESETS = [5, 10, 15, 20, 25];
+const SAVINGS_PERIODS = [
+  { days: 30, apy: 0.04 },
+  { days: 90, apy: 0.06 },
+  { days: 180, apy: 0.08 },
+  { days: 365, apy: 0.1 },
+];
+
+function seedRandom(seed) {
+  let s = seed;
+  return () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
+function shortAddr(a) {
+  return `${a.slice(0, 6)}...${a.slice(-4)}`;
+}
+
+function buildInitialState(source) {
+  return {
+    source,
+    day: 1,
+    cycleDay: 1,
+    balance: 0,
+    buffer: 0,
+    wallet: { usdt: 25 },
+    linkedBank: null, // { bank, last4 }
+    payoutStarted: false, // becomes true the moment the first payout lands, on first bank link
+    savings: { mode: null, percent: 10, periodDays: 30, stakes: [] }, // mode: null | "manual" | "ai"
+    history: [{ day: 1, balance: 0 }],
+    log: [],
+    crunchDay: null,
+    released: false,
+    aiPending: false,
+    rand: seedRandom(7),
+  };
+}
+
+function predictCrunch(history, cycleDay) {
+  if (history.length < 4) return null;
+  const recent = history.slice(-5);
+  const deltas = [];
+  for (let i = 1; i < recent.length; i++) deltas.push(recent[i].balance - recent[i - 1].balance);
+  const avgBurn = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+  if (avgBurn >= 0) return null;
+  const current = recent[recent.length - 1].balance;
+  const daysLeft = Math.floor(current / Math.abs(avgBurn));
+  const predictedDay = cycleDay + daysLeft;
+  return predictedDay <= CYCLE_LENGTH ? predictedDay : null;
+}
+
+function fmt(n) {
+  return `₦${Math.round(n).toLocaleString()}`;
+}
+function fmtUsdt(n) {
+  return `${n.toFixed(2)} USDT`;
+}
+
+// Simulated AI copilot responses. Templated rather than a live model call so
+// the shared demo behaves identically for every viewer — no API key, no
+// Claude account, and no network dependency for anyone opening the link.
+// The randomized pick + short "thinking" delay is what sells the feel of a
+// model actually reasoning about the user's specific numbers.
+const PREDICT_TEMPLATES = [
+  (d, s) => `Based on your ${s.toLowerCase()} pattern, expect things to get tight around day ${d} — your buffer will step in before then.`,
+  (d) => `You're on track to run low near day ${d}. I've got a buffer ready to smooth that over automatically.`,
+  (d) => `Day ${d} looks like where the pinch would hit — no need to worry, your buffer is already positioned to cover it.`,
+  (d, s) => `Your ${s.toLowerCase()} spending pace suggests day ${d} could be tight. I'll release funds from your buffer right when it matters.`,
+  (d) => `Watching your balance closely — it looks like day ${d} is where it'll dip low, and your buffer is already on standby.`,
+];
+
+const RELEASE_TEMPLATES = [
+  (amt) => `Your balance dipped low, so I moved ${amt} from your buffer to keep you covered until your next payout.`,
+  (amt) => `Covered you — ${amt} just landed back in your balance from your buffer, right when you needed it.`,
+  (amt) => `I caught the dip early and topped up your balance with ${amt} from your buffer. You're good until the next payout.`,
+  (amt) => `Buffer engaged: ${amt} released to your balance so today's low point doesn't turn into a real problem.`,
+];
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+async function getAiNudge({ sourceLabel, predictedDay, kind, releaseAmt }) {
+  const thinkTime = 900 + Math.random() * 900;
+  await new Promise((resolve) => setTimeout(resolve, thinkTime));
+  if (kind === "predict") {
+    return pick(PREDICT_TEMPLATES)(predictedDay, sourceLabel);
+  }
+  return pick(RELEASE_TEMPLATES)(fmt(releaseAmt));
+}
+
+function AuthScreen({ onSubmit, onGoogleAuth }) {
+  const [mode, setMode] = useState("signup"); // signup | login
+  const [method, setMethod] = useState("phone"); // phone | email
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const submit = () => {
+    if (method === "phone") {
+      if (!/^0\d{10}$/.test(identifier)) {
+        setError("Enter an 11-digit Nigerian phone number starting with 0.");
+        return;
+      }
+    } else {
+      if (!/^\S+@\S+\.\S+$/.test(identifier)) {
+        setError("Enter a valid email address.");
+        return;
+      }
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    setError("");
+    onSubmit(mode, identifier, method);
+  };
+
+  const continueWithGoogle = () => {
+    setGoogleLoading(true);
+    setTimeout(() => {
+      onGoogleAuth(mode);
+    }, 1000);
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans flex items-center justify-center px-6">
+      <div className="max-w-sm w-full">
+        <div className="flex items-center gap-2.5 mb-8 justify-center">
+          <Icon name="droplets" size={22} className="text-[#3FA796]" strokeWidth={2.2} />
+          <span className="font-display font-semibold text-lg tracking-tight">Buffer</span>
+        </div>
+
+        <div className="flex bg-[#132732] rounded-xl p-1 mb-6">
+          {["signup", "login"].map((m) => (
+            <button
+              key={m}
+              onClick={() => {
+                setMode(m);
+                setError("");
+              }}
+              className={`flex-1 text-sm font-display font-medium py-2 rounded-lg transition-colors ${
+                mode === m ? "bg-[#3FA796] text-[#0D1B22]" : "text-[#7C93A6]"
+              }`}
+            >
+              {m === "signup" ? "Sign up" : "Log in"}
+            </button>
+          ))}
+        </div>
+
+        <h1 className="font-display font-semibold text-xl mb-1">
+          {mode === "signup" ? "Create your account" : "Welcome back"}
+        </h1>
+        <p className="text-sm text-[#7C93A6] mb-6 leading-relaxed">
+          {mode === "signup"
+            ? method === "phone"
+              ? "We'll text you a code to verify your number."
+              : "We'll email you a code to verify your address."
+            : `Log in with your ${method === "phone" ? "phone number" : "email"} and password.`}
+        </p>
+
+        <button
+          onClick={continueWithGoogle}
+          disabled={googleLoading}
+          className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-[#EAF4F1] font-display font-medium text-sm px-4 py-3 rounded-lg transition-colors mb-4 disabled:opacity-60"
+        >
+          {googleLoading ? (
+            <>
+              <Icon name="loader" size={15} className="animate-spin" /> Connecting to Google...
+            </>
+          ) : (
+            <>
+              <Icon name="chrome" size={15} className="text-[#7C93A6]" /> Continue with Google
+            </>
+          )}
+        </button>
+
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-[#4F6373] font-mono">OR</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <div className="flex flex-col gap-3 mb-2">
+          <div className="flex items-center gap-2 bg-[#132732] border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-[#3FA796]/50">
+            {method === "phone" ? <Icon name="phone" size={15} className="text-[#4F6373]" /> : <Icon name="mail" size={15} className="text-[#4F6373]" />}
+            <input
+              type={method === "phone" ? "tel" : "email"}
+              value={identifier}
+              onChange={(e) =>
+                setIdentifier(method === "phone" ? e.target.value.replace(/\D/g, "").slice(0, 11) : e.target.value)
+              }
+              placeholder={method === "phone" ? "08012345678" : "you@example.com"}
+              className="flex-1 bg-transparent text-sm text-[#EAF4F1] placeholder:text-[#4F6373] outline-none"
+            />
+          </div>
+          <div className="flex items-center gap-2 bg-[#132732] border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-[#3FA796]/50">
+            <Icon name="lock" size={15} className="text-[#4F6373]" />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="flex-1 bg-transparent text-sm text-[#EAF4F1] placeholder:text-[#4F6373] outline-none"
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            setMethod((m) => (m === "phone" ? "email" : "phone"));
+            setIdentifier("");
+            setError("");
+          }}
+          className="text-xs text-[#3FA796] hover:underline mb-4"
+        >
+          {method === "phone" ? "Use email instead" : "Use phone number instead"}
+        </button>
+
+        {error && <p className="text-xs text-[#F2726F] mb-3">{error}</p>}
+
+        <button
+          onClick={submit}
+          className="w-full bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-sm px-4 py-3 rounded-lg transition-colors mt-1"
+        >
+          {mode === "signup" ? "Continue" : "Log in"}
+        </button>
+
+        <p className="text-xs text-[#4F6373] mt-6 text-center leading-relaxed">
+          Demo mode — no real account is created and no code is actually sent.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function VerifyScreen({ mode, identifier, method, onVerified, onBack }) {
+  const [code, setCode] = useState("");
+  const [seconds, setSeconds] = useState(30);
+  const [checking, setChecking] = useState(false);
+
+  React.useEffect(() => {
+    if (seconds <= 0) return;
+
+    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [seconds]);
+
+  const isOtp = mode === "signup";
+  const targetLen = isOtp ? 6 : 4;
+
+  const maskIdentifier = () => {
+    if (method === "email") {
+      const [name, domain] = identifier.split("@");
+      if (!domain) return identifier;
+      const maskedName = name.length <= 1 ? name : name[0] + "•".repeat(Math.max(name.length - 1, 3));
+      return `${maskedName}@${domain}`;
+    }
+    return `0${identifier.slice(1, 3)}••••${identifier.slice(-3)}`;
+  };
+
+  const submit = () => {
+    if (code.length !== targetLen) return;
+    setChecking(true);
+    setTimeout(() => onVerified(), 700);
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans flex items-center justify-center px-6">
+      <div className="max-w-sm w-full">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#7C93A6] hover:text-[#EAF4F1] mb-8 transition-colors">
+          <Icon name="chevron-left" size={16} /> Back
+        </button>
+
+        <div className="w-11 h-11 rounded-xl bg-[#132732] flex items-center justify-center mb-5">
+          {isOtp ? <Icon name="message-square" size={18} className="text-[#3FA796]" /> : <Icon name="key-round" size={18} className="text-[#3FA796]" />}
+        </div>
+
+        <h1 className="font-display font-semibold text-xl mb-1">
+          {isOtp ? `Verify your ${method === "phone" ? "number" : "email"}` : "Enter your PIN"}
+        </h1>
+        <p className="text-sm text-[#7C93A6] mb-6 leading-relaxed">
+          {isOtp
+            ? `We sent a ${targetLen}-digit code to ${maskIdentifier()}.`
+            : "Enter your 4-digit PIN to log in, or use biometrics."}
+        </p>
+
+        <input
+          type="text"
+          inputMode="numeric"
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, targetLen))}
+          placeholder={"•".repeat(targetLen)}
+          className="w-full bg-[#132732] border border-white/10 rounded-lg px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-mono text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50 mb-4"
+        />
+
+        <button
+          onClick={submit}
+          disabled={code.length !== targetLen || checking}
+          className="w-full bg-[#3FA796] hover:bg-[#379186] disabled:bg-[#3FA796]/25 disabled:cursor-not-allowed text-[#0D1B22] font-display font-semibold text-sm px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          {checking ? (
+            <>
+              <Icon name="loader" size={15} className="animate-spin" /> Verifying...
+            </>
+          ) : isOtp ? (
+            "Verify code"
+          ) : (
+            "Log in"
+          )}
+        </button>
+
+        {isOtp ? (
+          <p className="text-xs text-[#4F6373] mt-4 text-center">
+            {seconds > 0 ? (
+              `Resend code in ${seconds}s`
+            ) : (
+              <button onClick={() => setSeconds(30)} className="text-[#3FA796] hover:underline">
+                Resend code
+              </button>
+            )}
+          </p>
+        ) : (
+          <button className="w-full flex items-center justify-center gap-2 text-xs text-[#7C93A6] hover:text-[#EAF4F1] mt-4 py-2">
+            <Icon name="fingerprint" size={14} /> Use Face ID / fingerprint instead
+          </button>
+        )}
+
+        <p className="text-xs text-[#4F6373] mt-6 text-center leading-relaxed">
+          Demo mode — any {targetLen}-digit code is accepted.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function KycScreen({ onComplete }) {
+  const [idType, setIdType] = useState("bvn");
+  const [idNumber, setIdNumber] = useState("");
+  const [step, setStep] = useState("form"); // form | checking | verified
+
+  const submit = () => {
+    if (idNumber.length !== 11) return;
+    setStep("checking");
+    setTimeout(() => setStep("verified"), 1200);
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans flex items-center justify-center px-6">
+      <div className="max-w-sm w-full">
+        <div className="w-11 h-11 rounded-xl bg-[#132732] flex items-center justify-center mb-5">
+          <Icon name="credit-card" size={18} className="text-[#3FA796]" />
+        </div>
+
+        {step !== "verified" && (
+          <>
+            <h1 className="font-display font-semibold text-xl mb-1">Verify your identity</h1>
+            <p className="text-sm text-[#7C93A6] mb-6 leading-relaxed">
+              Tier 2 verification raises your limits so Buffer can actually hold and move money for you.
+            </p>
+
+            <div className="flex bg-[#132732] rounded-xl p-1 mb-4">
+              {["bvn", "nin"].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setIdType(t)}
+                  className={`flex-1 text-sm font-display font-medium py-2 rounded-lg transition-colors ${
+                    idType === t ? "bg-[#3FA796] text-[#0D1B22]" : "text-[#7C93A6]"
+                  }`}
+                >
+                  {t.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="text"
+              inputMode="numeric"
+              value={idNumber}
+              onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
+              placeholder={`11-digit ${idType.toUpperCase()}`}
+              className="w-full bg-[#132732] border border-white/10 rounded-lg px-3 py-2.5 text-sm font-mono text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50 mb-4"
+            />
+
+            <button
+              onClick={submit}
+              disabled={idNumber.length !== 11 || step === "checking"}
+              className="w-full bg-[#3FA796] hover:bg-[#379186] disabled:bg-[#3FA796]/25 disabled:cursor-not-allowed text-[#0D1B22] font-display font-semibold text-sm px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {step === "checking" ? (
+                <>
+                  <Icon name="loader" size={15} className="animate-spin" /> Verifying with NIMC/NIBSS...
+                </>
+              ) : (
+                "Verify identity"
+              )}
+            </button>
+
+            <p className="text-xs text-[#4F6373] mt-6 text-center leading-relaxed">
+              Demo mode — any 11-digit number is accepted. In production this checks against BVN/NIN records
+              through a licensed verification provider.
+            </p>
+          </>
+        )}
+
+        {step === "verified" && (
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="w-14 h-14 rounded-full bg-[#3FA796]/10 flex items-center justify-center">
+              <Icon name="shield-check" size={26} className="text-[#3FA796]" />
+            </div>
+            <h1 className="font-display font-semibold text-xl">Tier 2 verified</h1>
+            <p className="text-sm text-[#7C93A6] leading-relaxed max-w-xs">
+              Your limits are raised. You're ready to set up your income and start using Buffer.
+            </p>
+            <button
+              onClick={onComplete}
+              className="w-full bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-sm px-4 py-3 rounded-lg transition-colors mt-3"
+            >
+              Continue
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Onboarding({ onSelect, loading, selectedId }) {
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans flex items-center justify-center px-6">
+      <div className="max-w-md w-full">
+        <div className="flex items-center gap-2.5 mb-8 justify-center">
+          <Icon name="droplets" size={22} className="text-[#3FA796]" strokeWidth={2.2} />
+          <span className="font-display font-semibold text-lg tracking-tight">Buffer</span>
+        </div>
+        <h1 className="font-display font-semibold text-2xl text-center mb-2 leading-snug">
+          What does your income look like?
+        </h1>
+        <p className="text-sm text-[#7C93A6] text-center mb-8 leading-relaxed">
+          Buffer learns your pattern from wherever money comes in, then quietly protects
+          what's left between payouts.
+        </p>
+        <div className="flex flex-col gap-3">
+          {INCOME_SOURCES.map((s) => {
+            const isSelected = selectedId === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => onSelect(s)}
+                disabled={loading}
+                className={`flex items-center gap-4 text-left px-5 py-4 rounded-xl border transition-colors ${
+                  isSelected
+                    ? "bg-[#3FA796]/10 border-[#3FA796]/50"
+                    : "bg-[#132732] border-white/5 hover:border-white/15"
+                } disabled:cursor-not-allowed`}
+              >
+                <div className="w-9 h-9 rounded-lg bg-[#0D1B22] flex items-center justify-center shrink-0">
+                  {isSelected && loading ? (
+                    <Icon name="loader" size={16} className="animate-spin text-[#3FA796]" />
+                  ) : (
+                    <Icon name={s.icon} size={16} className="text-[#3FA796]" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-display font-medium text-sm">{s.label}</p>
+                  <p className="text-xs text-[#7C93A6] mt-0.5">{s.cadence}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BankLinkScreen({ state, setState, onBack }) {
+  const [step, setStep] = useState(state.linkedBank ? "linked" : "pick"); // pick -> details -> linking -> linked
+  const [selectedBank, setSelectedBank] = useState(state.linkedBank?.bank || null);
+  const [acctNumber, setAcctNumber] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [error, setError] = useState("");
+
+  const submitDetails = () => {
+    if (!/^\d{10}$/.test(acctNumber)) {
+      setError("Enter a valid 10-digit account number.");
+      return;
+    }
+    if (!consent) {
+      setError("You need to authorize the mandate to continue.");
+      return;
+    }
+    setError("");
+    setStep("linking");
+    setTimeout(() => {
+      const bankInfo = { bank: selectedBank, last4: acctNumber.slice(-4) };
+      setState((prev) => {
+        let { balance, buffer, history, log, payoutStarted } = prev;
+        log = [...log, { day: prev.day, kind: "bank", text: `Linked ${bankInfo.bank} account ****${bankInfo.last4}.` }];
+        if (!payoutStarted) {
+          const locked = prev.source.amount * LOCK_RATE;
+          balance = balance + (prev.source.amount - locked);
+          buffer = buffer + locked;
+          history = [{ day: prev.day, balance }];
+          log = [
+            ...log,
+            {
+              day: prev.day,
+              kind: "inflow",
+              text: `First payout — ₦${prev.source.amount.toLocaleString()} landed in ${bankInfo.bank} ****${bankInfo.last4}. Locking ${fmt(
+                locked
+              )} into your buffer.`,
+            },
+          ];
+          payoutStarted = true;
+        }
+        return { ...prev, linkedBank: bankInfo, balance, buffer, history, log, payoutStarted };
+      });
+      setStep("linked");
+    }, 1100);
+  };
+
+  const unlink = () => {
+    setState((prev) => ({
+      ...prev,
+      linkedBank: null,
+      log: [...prev.log, { day: prev.day, kind: "bank", text: `Unlinked ${prev.linkedBank?.bank} account.` }],
+    }));
+    setSelectedBank(null);
+    setAcctNumber("");
+    setConsent(false);
+    setStep("pick");
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans">
+      <div className="max-w-2xl mx-auto px-6 py-10 font-body">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#7C93A6] hover:text-[#EAF4F1] mb-8 transition-colors">
+          <Icon name="chevron-left" size={16} /> Back to dashboard
+        </button>
+
+        <div className="flex items-center gap-2.5 mb-2">
+          <Icon name="landmark" size={20} className="text-[#3FA796]" />
+          <span className="font-display font-semibold text-xl">Link your bank account</span>
+        </div>
+        <p className="text-sm text-[#7C93A6] mb-8 leading-relaxed">
+          Connect a Nigerian bank account so Buffer can credit withdrawals directly to you — and, with your
+          authorization, sweep small amounts into your buffer automatically.
+        </p>
+
+        {step === "linked" && state.linkedBank && (
+          <div className="bg-[#132732] rounded-2xl border border-white/5 p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-[#0D1B22] flex items-center justify-center">
+                <Icon name="landmark" size={18} className="text-[#3FA796]" />
+              </div>
+              <div>
+                <p className="font-display font-medium text-base">{state.linkedBank.bank}</p>
+                <p className="text-xs font-mono text-[#7C93A6]">****{state.linkedBank.last4}</p>
+              </div>
+              <span className="ml-auto flex items-center gap-1 text-xs text-[#3FA796] bg-[#3FA796]/10 px-2.5 py-1 rounded-full">
+                <Icon name="check" size={12} /> Linked
+              </span>
+            </div>
+            <p className="text-xs text-[#7C93A6] mb-4 leading-relaxed">
+              Withdrawals and swap payouts can now be sent straight to this account. You can revoke this at any
+              time from your own banking app.
+            </p>
+            <button onClick={unlink} className="text-xs text-[#F2726F] hover:underline">
+              Unlink account
+            </button>
+          </div>
+        )}
+
+        {step === "pick" && (
+          <div className="flex flex-col gap-3">
+            {BANKS.map((b) => (
+              <button
+                key={b}
+                onClick={() => {
+                  setSelectedBank(b);
+                  setStep("details");
+                }}
+                className="flex items-center gap-4 text-left px-5 py-4 rounded-xl border bg-[#132732] border-white/5 hover:border-white/15 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-lg bg-[#0D1B22] flex items-center justify-center shrink-0">
+                  <Icon name="landmark" size={16} className="text-[#3FA796]" />
+                </div>
+                <p className="font-display font-medium text-sm">{b}</p>
+                <Icon name="chevron-right" size={16} className="ml-auto text-[#4F6373]" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === "details" && (
+          <div className="bg-[#132732] rounded-2xl border border-white/5 p-6">
+            <button onClick={() => setStep("pick")} className="text-xs text-[#7C93A6] hover:text-[#EAF4F1] mb-4 flex items-center gap-1">
+              <Icon name="chevron-left" size={13} /> Choose a different bank
+            </button>
+            <p className="font-display font-medium text-base mb-4">{selectedBank}</p>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={acctNumber}
+              onChange={(e) => setAcctNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              placeholder="10-digit account number"
+              className="w-full bg-[#0D1B22] border border-white/10 rounded-lg px-3 py-2.5 text-sm font-mono text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50 mb-4"
+            />
+            <label className="flex items-start gap-2.5 text-xs text-[#7C93A6] leading-relaxed mb-5 cursor-pointer">
+              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5" />
+              I authorize Buffer to credit withdrawals to this account and, where enabled, to debit scheduled
+              buffer contributions from it.
+            </label>
+            {error && <p className="text-xs text-[#F2726F] mb-3">{error}</p>}
+            <button
+              onClick={submitDetails}
+              className="w-full bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-sm px-4 py-3 rounded-lg transition-colors"
+            >
+              Link account
+            </button>
+          </div>
+        )}
+
+        {step === "linking" && (
+          <div className="bg-[#132732] rounded-2xl border border-white/5 p-10 flex flex-col items-center justify-center gap-3">
+            <Icon name="loader" size={22} className="animate-spin text-[#3FA796]" />
+            <p className="text-sm text-[#7C93A6]">Verifying account with {selectedBank}...</p>
+          </div>
+        )}
+
+        <p className="text-xs text-[#4F6373] mt-8 leading-relaxed">
+          Demo mode — in production this step runs through a licensed account-aggregation provider (e.g. Mono or
+          Okra) with a real consent flow and a revocable direct-debit mandate, rather than a typed account number.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SavingsScreen({ state, setState, onBack }) {
+  const { savings, day, balance } = state;
+  const isConfigured = !!savings.mode;
+  const [editing, setEditing] = useState(!isConfigured);
+  const [mode, setMode] = useState(savings.mode || "ai");
+  const [percent, setPercent] = useState(savings.percent);
+  const [periodDays, setPeriodDays] = useState(savings.periodDays);
+
+  const activeStakes = savings.stakes;
+  const totalStakedNgn = activeStakes.reduce((sum, s) => sum + s.principalNgn, 0);
+  const totalStakedUsdt = totalStakedNgn / USDT_NGN_RATE;
+  const nextMaturity = activeStakes.length
+    ? Math.min(...activeStakes.map((s) => s.maturityDay - day))
+    : null;
+  const currentPeriod = SAVINGS_PERIODS.find((p) => p.days === savings.periodDays) || SAVINGS_PERIODS[0];
+
+  const saveSettings = () => {
+    const period = SAVINGS_PERIODS.find((p) => p.days === periodDays) || SAVINGS_PERIODS[0];
+    setState((prev) => ({
+      ...prev,
+      savings: { ...prev.savings, mode, percent, periodDays },
+      log: [
+        ...prev.log,
+        {
+          day: prev.day,
+          kind: "savings-setup",
+          text: `Turned on ${mode === "ai" ? "AI" : "manual"} savings — ${percent}% staked for ${period.days} days at ${(period.apy * 100).toFixed(0)}% APY.`,
+        },
+      ],
+    }));
+    setEditing(false);
+  };
+
+  const stakeNow = () => {
+    const amt = balance * (percent / 100);
+    if (amt <= 0) return;
+    const period = SAVINGS_PERIODS.find((p) => p.days === periodDays) || SAVINGS_PERIODS[0];
+    setState((prev) => ({
+      ...prev,
+      balance: prev.balance - amt,
+      savings: {
+        ...prev.savings,
+        stakes: [
+          ...prev.savings.stakes,
+          { id: `${prev.day}-${Math.random().toString(36).slice(2, 7)}`, principalNgn: amt, startDay: prev.day, maturityDay: prev.day + period.days, periodDays: period.days, apy: period.apy },
+        ],
+      },
+      log: [
+        ...prev.log,
+        {
+          day: prev.day,
+          kind: "stake",
+          text: `You staked ${fmt(amt)} (${percent}% of your balance) into USDT savings — matures in ${period.days} days at ${(period.apy * 100).toFixed(0)}% APY.`,
+        },
+      ],
+    }));
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans">
+      <div className="max-w-2xl mx-auto px-6 py-10 font-body">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#7C93A6] hover:text-[#EAF4F1] mb-8 transition-colors">
+          <Icon name="chevron-left" size={16} /> Back to dashboard
+        </button>
+
+        <div className="flex items-center gap-2.5 mb-2">
+          <Icon name="piggy-bank" size={20} className="text-[#D8B25E]" />
+          <span className="font-display font-semibold text-xl">Savings</span>
+          {isConfigured && (
+            <span className="text-xs font-mono px-2.5 py-1 rounded-full text-[#D8B25E] bg-[#D8B25E]/10 border border-[#D8B25E]/30">
+              {savings.mode === "ai" ? "AI" : "Manual"}
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-[#7C93A6] mb-8 leading-relaxed">
+          Stake a share of your income in USDT and let it earn yield — automatically with AI, or on your own schedule.
+        </p>
+
+        {!editing && isConfigured && (
+          <div className="bg-[#132732] rounded-2xl border border-white/5 p-6 mb-6">
+            <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-1">Total staked</p>
+            <p className="font-display font-semibold text-4xl mb-1 tabular-nums">{fmt(totalStakedNgn)}</p>
+            <p className="text-xs text-[#7C93A6] mb-4">
+              ≈ {totalStakedUsdt.toFixed(2)} USDT staked · {savings.percent}% per payout · {currentPeriod.days} days at{" "}
+              {(currentPeriod.apy * 100).toFixed(0)}% APY
+            </p>
+            <p className="text-xs text-[#7C93A6] mb-5">
+              {nextMaturity !== null
+                ? `Next stake matures in ${Math.max(nextMaturity, 0)} day${nextMaturity === 1 ? "" : "s"}.`
+                : "No active stakes yet."}
+            </p>
+
+            {savings.mode === "manual" ? (
+              <button
+                onClick={stakeNow}
+                className="bg-[#D8B25E] hover:bg-[#c6a253] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors mb-3"
+              >
+                Stake {savings.percent}% now
+              </button>
+            ) : (
+              <p className="text-xs text-[#7C93A6] mb-3 leading-relaxed">
+                AI stakes {savings.percent}% of every payout automatically — no action needed.
+              </p>
+            )}
+            <button onClick={() => setEditing(true)} className="text-xs text-[#3FA796] hover:underline block">
+              Change settings
+            </button>
+          </div>
+        )}
+
+        {editing && (
+          <div className="bg-[#132732] rounded-2xl border border-white/5 p-6 flex flex-col gap-5">
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-2">Mode</p>
+              <div className="flex bg-[#0D1B22] rounded-xl p-1">
+                {["ai", "manual"].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={`flex-1 text-sm font-display font-medium py-2 rounded-lg transition-colors ${
+                      mode === m ? "bg-[#D8B25E] text-[#0D1B22]" : "text-[#7C93A6]"
+                    }`}
+                  >
+                    {m === "ai" ? "AI" : "Manual"}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-[#4F6373] mt-2 leading-relaxed">
+                {mode === "ai"
+                  ? "AI automatically stakes a share of every payout the moment it lands — no action needed from you."
+                  : "You choose when to stake, using the percentage and period below."}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-2 flex items-center gap-1.5">
+                <Icon name="percent" size={12} /> Percentage to stake
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {SAVINGS_PERCENT_PRESETS.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPercent(p)}
+                    className={`text-sm font-display font-medium px-3.5 py-2 rounded-lg border transition-colors ${
+                      percent === p ? "bg-[#D8B25E]/10 border-[#D8B25E]/50 text-[#D8B25E]" : "bg-white/5 border-white/10 text-[#EAF4F1]"
+                    }`}
+                  >
+                    {p}%
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-2 flex items-center gap-1.5">
+                <Icon name="clock" size={12} /> Staking period
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {SAVINGS_PERIODS.map((p) => (
+                  <button
+                    key={p.days}
+                    onClick={() => setPeriodDays(p.days)}
+                    className={`text-sm font-display font-medium px-3.5 py-2 rounded-lg border transition-colors ${
+                      periodDays === p.days
+                        ? "bg-[#D8B25E]/10 border-[#D8B25E]/50 text-[#D8B25E]"
+                        : "bg-white/5 border-white/10 text-[#EAF4F1]"
+                    }`}
+                  >
+                    {p.days}d · {(p.apy * 100).toFixed(0)}% APY
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={saveSettings}
+                className="bg-[#D8B25E] hover:bg-[#c6a253] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
+              >
+                {isConfigured ? "Save settings" : "Start saving"}
+              </button>
+              {isConfigured && (
+                <button onClick={() => setEditing(false)} className="text-xs text-[#7C93A6] hover:text-[#EAF4F1]">
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SavingsSummaryCard({ state, onOpen }) {
+  const { savings, day } = state;
+  const isConfigured = !!savings.mode;
+  const totalStakedNgn = savings.stakes.reduce((sum, s) => sum + s.principalNgn, 0);
+  const nextMaturity = savings.stakes.length
+    ? Math.max(Math.min(...savings.stakes.map((s) => s.maturityDay - day)), 0)
+    : null;
+
+  return (
+    <button
+      onClick={onOpen}
+      className="w-full text-left bg-[#132732] rounded-2xl border border-white/5 p-6 mb-6 hover:border-white/15 transition-colors"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Icon name="piggy-bank" size={16} className="text-[#D8B25E]" />
+          <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6]">Savings</p>
+          {isConfigured && (
+            <span className="text-xs font-mono px-2 py-0.5 rounded-full text-[#D8B25E] bg-[#D8B25E]/10 border border-[#D8B25E]/30">
+              {savings.mode === "ai" ? "AI" : "Manual"}
+            </span>
+          )}
+        </div>
+        <Icon name="chevron-right" size={16} className="text-[#4F6373]" />
+      </div>
+      {isConfigured ? (
+        <>
+          <p className="font-display font-semibold text-2xl mb-1 tabular-nums">{fmt(totalStakedNgn)}</p>
+          <p className="text-xs text-[#7C93A6]">
+            {savings.percent}% per payout · {savings.periodDays} days
+            {nextMaturity !== null ? ` · matures in ${nextMaturity}d` : " · no active stakes yet"}
+          </p>
+        </>
+      ) : (
+        <p className="text-sm text-[#7C93A6] leading-relaxed">
+          Set up automated or manual USDT staking on your income — tap to get started.
+        </p>
+      )}
+    </button>
+  );
+}
+
+function WalletPanel({ state, setState, onOpenBank }) {
+  const [panel, setPanel] = useState(null); // null | 'receive' | 'send' | 'withdraw'
+  const [copied, setCopied] = useState(false);
+  const [receiveAmt, setReceiveAmt] = useState("");
+  const [sendAddr, setSendAddr] = useState("");
+  const [sendAmt, setSendAmt] = useState("");
+  const [withdrawAmt, setWithdrawAmt] = useState("");
+  const [error, setError] = useState("");
+
+  const copyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(WALLET_ADDRESS);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {}
+  };
+
+  const togglePanel = (name) => {
+    setError("");
+    setPanel((prev) => (prev === name ? null : name));
+  };
+
+  const doReceive = () => {
+    const amt = parseFloat(receiveAmt);
+    if (!amt || amt <= 0) return setError("Enter a valid USDT amount.");
+    setState((prev) => ({
+      ...prev,
+      wallet: { ...prev.wallet, usdt: prev.wallet.usdt + amt },
+      log: [...prev.log, { day: prev.day, kind: "wallet-in", text: `Received ${fmtUsdt(amt)} from an external wallet.` }],
+    }));
+    setReceiveAmt("");
+    setPanel(null);
+  };
+
+  const doSend = () => {
+    const amt = parseFloat(sendAmt);
+    if (!sendAddr.trim()) return setError("Enter a recipient address.");
+    if (!amt || amt <= 0) return setError("Enter a valid USDT amount.");
+    if (amt > state.wallet.usdt) return setError("That's more than your wallet balance.");
+    setState((prev) => ({
+      ...prev,
+      wallet: { ...prev.wallet, usdt: prev.wallet.usdt - amt },
+      log: [...prev.log, { day: prev.day, kind: "wallet-out", text: `Sent ${fmtUsdt(amt)} to ${shortAddr(sendAddr.trim())}.` }],
+    }));
+    setSendAddr("");
+    setSendAmt("");
+    setPanel(null);
+  };
+
+  // Withdraw converts USDT straight to naira at the demo rate, takes the
+  // 0.5% exchange fee, and credits the net amount to the linked bank —
+  // which is also what "Available balance" represents, so the dashboard
+  // balance rises by the net amount every time a withdrawal lands.
+  const doWithdraw = () => {
+    const amt = parseFloat(withdrawAmt);
+    if (!state.linkedBank) return setError("Link a bank account first.");
+    if (!amt || amt <= 0) return setError("Enter a valid USDT amount.");
+    if (amt > state.wallet.usdt) return setError("That's more than your wallet balance.");
+    const gross = amt * USDT_NGN_RATE;
+    const fee = gross * FEE_RATE;
+    const net = gross - fee;
+    const bank = state.linkedBank;
+    setState((prev) => ({
+      ...prev,
+      wallet: { ...prev.wallet, usdt: prev.wallet.usdt - amt },
+      balance: prev.balance + net,
+      log: [
+        ...prev.log,
+        {
+          day: prev.day,
+          kind: "withdraw",
+          text: `Withdrew ${fmtUsdt(amt)} → ${fmt(net)} (fee ${fmt(fee)}) credited to ${bank.bank} ****${bank.last4}.`,
+        },
+      ],
+    }));
+    setWithdrawAmt("");
+    setPanel(null);
+  };
+
+  const withdrawPreview = useMemo(() => {
+    const amt = parseFloat(withdrawAmt);
+    if (!amt || amt <= 0) return null;
+    const gross = amt * USDT_NGN_RATE;
+    const fee = gross * FEE_RATE;
+    return { gross, fee, net: gross - fee };
+  }, [withdrawAmt]);
+
+  const actions = [
+    { key: "receive", label: "Receive", icon: "arrow-down-to-line" },
+    { key: "send", label: "Send", icon: "arrow-up-from-line" },
+    { key: "withdraw", label: "Withdraw", icon: "arrow-down-circle" },
+  ];
+
+  return (
+    <div className="bg-[#132732] rounded-2xl border border-white/5 p-6 mb-6">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div className="flex items-center gap-2">
+          <Icon name="wallet" size={16} className="text-[#3FA796]" />
+          <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6]">USDT wallet</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={copyAddress}
+            className="flex items-center gap-1.5 text-xs font-mono text-[#7C93A6] hover:text-[#EAF4F1] bg-[#0D1B22] px-2.5 py-1.5 rounded-md transition-colors"
+          >
+            {copied ? <Icon name="check" size={12} className="text-[#3FA796]" /> : <Icon name="copy" size={12} />}
+            {shortAddr(WALLET_ADDRESS)}
+          </button>
+        </div>
+      </div>
+
+      <p className="font-display font-semibold text-3xl mb-5 tabular-nums">{fmtUsdt(state.wallet.usdt)}</p>
+
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        {actions.map((a) => {
+          const isActive = panel === a.key;
+          return (
+            <button
+              key={a.key}
+              onClick={() => togglePanel(a.key)}
+              className={`flex items-center gap-1.5 text-sm font-display font-medium px-3.5 py-2 rounded-lg border transition-colors ${
+                isActive
+                  ? "bg-[#3FA796]/10 border-[#3FA796]/50 text-[#3FA796]"
+                  : "bg-white/5 border-white/10 text-[#EAF4F1] hover:bg-white/10"
+              }`}
+            >
+              <Icon name={a.icon} size={14} /> {a.label}
+            </button>
+          );
+        })}
+        <span className="text-xs font-mono text-[#4F6373] ml-auto hidden sm:inline">
+          rate ₦{USDT_NGN_RATE.toLocaleString()}/USDT · {FEE_RATE * 100}% fee
+        </span>
+      </div>
+
+      {panel === "receive" && (
+        <div className="bg-[#0D1B22] rounded-xl p-4 mt-2">
+          <p className="text-xs text-[#7C93A6] mb-3 leading-relaxed">
+            Share your address to receive USDT from anywhere. For this demo, simulate an incoming payment below.
+          </p>
+          <p className="font-mono text-xs text-[#C7D6D2] break-all mb-3">{WALLET_ADDRESS}</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={receiveAmt}
+              onChange={(e) => setReceiveAmt(e.target.value)}
+              placeholder="Amount (USDT)"
+              className="flex-1 bg-[#132732] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50"
+            />
+            <button onClick={doReceive} className="bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+              Simulate receipt
+            </button>
+          </div>
+        </div>
+      )}
+
+      {panel === "send" && (
+        <div className="bg-[#0D1B22] rounded-xl p-4 mt-2 flex flex-col gap-2.5">
+          <input
+            type="text"
+            value={sendAddr}
+            onChange={(e) => setSendAddr(e.target.value)}
+            placeholder="Recipient address"
+            className="bg-[#132732] border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50"
+          />
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={sendAmt}
+              onChange={(e) => setSendAmt(e.target.value)}
+              placeholder="Amount (USDT)"
+              className="flex-1 bg-[#132732] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50"
+            />
+            <button onClick={doSend} className="bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+              Send
+            </button>
+          </div>
+          <p className="text-xs text-[#4F6373]">Wallet-to-wallet USDT transfers — no fee.</p>
+        </div>
+      )}
+
+      {panel === "withdraw" && (
+        <div className="bg-[#0D1B22] rounded-xl p-4 mt-2 flex flex-col gap-2.5">
+          {state.linkedBank ? (
+            <>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={withdrawAmt}
+                  onChange={(e) => setWithdrawAmt(e.target.value)}
+                  placeholder="Amount (USDT)"
+                  className="flex-1 bg-[#132732] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#EAF4F1] placeholder:text-[#4F6373] outline-none focus:border-[#3FA796]/50"
+                />
+                <button onClick={doWithdraw} className="bg-[#D8B25E] hover:bg-[#c6a253] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+                  Withdraw
+                </button>
+              </div>
+              {withdrawPreview && (
+                <div className="text-xs font-mono text-[#7C93A6] flex flex-col gap-0.5">
+                  <span>Converts at: {fmt(withdrawPreview.gross)}</span>
+                  <span>Fee ({FEE_RATE * 100}%): -{fmt(withdrawPreview.fee)}</span>
+                  <span className="text-[#D8B25E]">Bank receives: {fmt(withdrawPreview.net)}</span>
+                </div>
+              )}
+              <p className="text-xs text-[#4F6373]">
+                Converts USDT to naira and credits {state.linkedBank.bank} ****{state.linkedBank.last4} directly —
+                no P2P counterparty, no separate swap step. Your available balance above updates immediately.
+              </p>
+            </>
+          ) : (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs text-[#7C93A6] leading-relaxed">Link a bank account to withdraw USDT as naira.</p>
+              <button onClick={onOpenBank} className="bg-[#3FA796] hover:bg-[#379186] text-[#0D1B22] font-display font-semibold text-xs px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap">
+                Link bank
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-xs text-[#F2726F] mt-2">{error}</p>}
+    </div>
+  );
+}
+
+function BufferDemo() {
+  const [screen, setScreen] = useState("auth"); // auth | verify | kyc | onboarding | dashboard | bank | savings
+  const [authMode, setAuthMode] = useState("signup");
+  const [authIdentifier, setAuthIdentifier] = useState("");
+  const [authMethod, setAuthMethod] = useState("phone"); // phone | email | google
+  const [connecting, setConnecting] = useState(false);
+  const [selectedSourceId, setSelectedSourceId] = useState(null);
+  const [state, setState] = useState(null);
+  const stateRef = useRef(null);
+  stateRef.current = state;
+
+  const handleAuthSubmit = useCallback((mode, identifier, method) => {
+    setAuthMode(mode);
+    setAuthIdentifier(identifier);
+    setAuthMethod(method);
+    setScreen("verify");
+  }, []);
+
+  // Google already verifies the account, so it skips OTP/PIN entirely —
+  // straight to KYC for a new signup, or straight into the app for a login.
+  const handleGoogleAuth = useCallback((mode) => {
+    setAuthMode(mode);
+    setAuthIdentifier("demo.user@gmail.com");
+    setAuthMethod("google");
+    setScreen(mode === "signup" ? "kyc" : "onboarding");
+  }, []);
+
+  const handleVerified = useCallback(() => {
+    setScreen(authMode === "signup" ? "kyc" : "onboarding");
+  }, [authMode]);
+
+  const handleKycComplete = useCallback(() => {
+    setScreen("onboarding");
+  }, []);
+
+  const handleSelectSource = useCallback((source) => {
+    setSelectedSourceId(source.id);
+    setConnecting(true);
+    setTimeout(() => {
+      setState(buildInitialState(source));
+      setConnecting(false);
+      setScreen("dashboard");
+    }, 900);
+  }, []);
+
+  const crunchPrediction = useMemo(
+    () => (state ? predictCrunch(state.history, state.cycleDay) : null),
+    [state]
+  );
+
+  const runAiNudge = useCallback((payload) => {
+    setState((prev) => (prev ? { ...prev, aiPending: true } : prev));
+    getAiNudge(payload).then((text) => {
+      setState((prev) => {
+        if (!prev) return prev;
+        const log = [...prev.log];
+        for (let i = log.length - 1; i >= 0; i--) {
+          if (log[i].kind === payload.kind && log[i].pending) {
+            log[i] = { ...log[i], text, pending: false };
+            break;
+          }
+        }
+        return { ...prev, log, aiPending: false };
+      });
+    });
+  }, []);
+
+  const advanceDay = useCallback(() => {
+    setState((prev) => {
+      if (!prev) return prev;
+      if (!prev.linkedBank) return prev; // nothing to simulate until a bank is connected
+      const rand = prev.rand;
+      let { day, cycleDay, balance, buffer, history, log, crunchDay, released, source, savings } = prev;
+
+      day += 1;
+      cycleDay += 1;
+      let newLog = [...log];
+      let newCrunchDay = crunchDay;
+      let newReleased = released;
+      let newStakes = savings.stakes;
+      let triggerAi = null;
+
+      if (cycleDay > CYCLE_LENGTH) {
+        cycleDay = 1;
+        const locked = source.amount * LOCK_RATE;
+        let stakeAmt = 0;
+        if (savings.mode === "ai" && savings.percent > 0) {
+          const period = SAVINGS_PERIODS.find((p) => p.days === savings.periodDays) || SAVINGS_PERIODS[0];
+          stakeAmt = source.amount * (savings.percent / 100);
+          newStakes = [
+            ...newStakes,
+            { id: `${day}-${Math.random().toString(36).slice(2, 7)}`, principalNgn: stakeAmt, startDay: day, maturityDay: day + period.days, periodDays: period.days, apy: period.apy },
+          ];
+          newLog.push({
+            day,
+            kind: "stake",
+            text: `AI staked ${fmt(stakeAmt)} (${savings.percent}% of your payout) into USDT savings — matures in ${period.days} days at ${(period.apy * 100).toFixed(0)}% APY.`,
+          });
+        }
+        balance += source.amount - locked - stakeAmt;
+        buffer += locked;
+        newLog.push({
+          day,
+          kind: "inflow",
+          text: `New payout — ₦${source.amount.toLocaleString()} in. Locking ${fmt(locked)} into your buffer.`,
+        });
+        newCrunchDay = null;
+        newReleased = false;
+      } else {
+        const weight = SPEND_PROFILE[(cycleDay - 1) % SPEND_PROFILE.length];
+        const noise = 0.7 + rand() * 0.6;
+        const spend = DAILY_BASE_SPEND * weight * noise;
+        balance -= spend;
+      }
+
+      // Release any stakes that have reached maturity, principal + yield, back into balance
+      const stillLocked = [];
+      newStakes.forEach((s) => {
+        if (s.maturityDay <= day) {
+          const yieldAmt = s.principalNgn * s.apy * (s.periodDays / 365);
+          const payout = s.principalNgn + yieldAmt;
+          balance += payout;
+          newLog.push({
+            day,
+            kind: "matured",
+            text: `Your ${s.periodDays}-day USDT stake matured — ${fmt(payout)} credited to your balance (${fmt(yieldAmt)} yield).`,
+          });
+        } else {
+          stillLocked.push(s);
+        }
+      });
+      newStakes = stillLocked;
+
+      const newHistory = [...history, { day, balance }].slice(-30);
+      const predicted = predictCrunch(newHistory, cycleDay);
+
+      if (predicted && !newCrunchDay && !newReleased) {
+        newCrunchDay = predicted;
+        newLog.push({ day, kind: "predict", pending: true, text: "Buffer AI is thinking..." });
+        triggerAi = { kind: "predict", sourceLabel: source.label, balance, predictedDay: predicted, cycleDay };
+      }
+
+      if (balance < 3000 && buffer > 0 && !newReleased) {
+        const gross = Math.min(buffer, source.amount * 0.4);
+        const fee = gross * FEE_RATE;
+        const net = gross - fee;
+        balance += net;
+        buffer -= gross;
+        newReleased = true;
+        newLog.push({ day, kind: "release", pending: true, text: "Buffer AI is thinking..." });
+        triggerAi = { kind: "release", sourceLabel: source.label, releaseAmt: net, feeAmt: fee, cycleDay };
+      }
+
+      const next = {
+        ...prev,
+        day,
+        cycleDay,
+        balance,
+        buffer,
+        history: newHistory,
+        log: newLog,
+        crunchDay: newCrunchDay,
+        released: newReleased,
+        savings: { ...savings, stakes: newStakes },
+      };
+      if (triggerAi) setTimeout(() => runAiNudge(triggerAi), 0);
+      return next;
+    });
+  }, [runAiNudge]);
+
+  const advanceWeek = useCallback(() => {
+    for (let i = 0; i < 7; i++) advanceDay();
+  }, [advanceDay]);
+
+  const reset = useCallback(() => {
+    setScreen("onboarding");
+    setSelectedSourceId(null);
+    setState(null);
+  }, []);
+
+  if (screen === "auth") {
+    return <AuthScreen onSubmit={handleAuthSubmit} onGoogleAuth={handleGoogleAuth} />;
+  }
+
+  if (screen === "verify") {
+    return (
+      <VerifyScreen
+        mode={authMode}
+        identifier={authIdentifier}
+        method={authMethod}
+        onVerified={handleVerified}
+        onBack={() => setScreen("auth")}
+      />
+    );
+  }
+
+  if (screen === "kyc") {
+    return <KycScreen onComplete={handleKycComplete} />;
+  }
+
+  if (screen === "onboarding" || !state) {
+    return <Onboarding onSelect={handleSelectSource} loading={connecting} selectedId={selectedSourceId} />;
+  }
+
+  if (screen === "bank") {
+    return <BankLinkScreen state={state} setState={setState} onBack={() => setScreen("dashboard")} />;
+  }
+
+  if (screen === "savings") {
+    return <SavingsScreen state={state} setState={setState} onBack={() => setScreen("dashboard")} />;
+  }
+
+  const tankPct = Math.max(0, Math.min(100, (state.balance / state.source.amount) * 100));
+  const bufferPct = Math.max(0, Math.min(100, (state.buffer / (state.source.amount * LOCK_RATE)) * 100));
+  const recentLog = [...state.log].reverse().slice(0, 7);
+
+  const logColor = (entry) => {
+    if (entry.pending) return "text-[#4F6373] italic";
+    switch (entry.kind) {
+      case "release":
+        return "text-[#D8B25E]";
+      case "predict":
+        return "text-[#F2726F]";
+      case "wallet-in":
+        return "text-[#3FA796]";
+      case "wallet-out":
+        return "text-[#C7D6D2]";
+      case "withdraw":
+        return "text-[#3FA796]";
+      case "bank":
+        return "text-[#7C93A6]";
+      case "stake":
+        return "text-[#D8B25E]";
+      case "matured":
+        return "text-[#D8B25E]";
+      case "savings-setup":
+        return "text-[#7C93A6]";
+      default:
+        return "text-[#C7D6D2]";
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#0D1B22] text-[#EAF4F1] font-sans">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+      `}</style>
+
+      <div className="max-w-5xl mx-auto px-6 py-10 font-body">
+        <div className="flex items-center justify-between mb-10 flex-wrap gap-3">
+          <div className="flex items-center gap-2.5">
+            <Icon name="droplets" size={22} className="text-[#3FA796]" strokeWidth={2.2} />
+            <span className="font-display font-semibold text-lg tracking-tight">Buffer</span>
+            <span className="text-xs font-mono text-[#4F6373] ml-2">· {state.source.label}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setScreen("bank")}
+              className={
+                state.linkedBank
+                  ? "flex items-center gap-2 text-xs font-mono font-semibold px-3.5 py-2 rounded-full text-[#3FA796] bg-[#3FA796]/10 border border-[#3FA796]/30 transition-colors"
+                  : "flex items-center gap-2 text-sm font-display font-semibold px-4 py-2.5 rounded-full text-[#0D1B22] bg-[#D8B25E] hover:bg-[#e6c076] shadow-[0_0_0_1px_rgba(216,178,94,0.4),0_0_24px_rgba(216,178,94,0.35)] transition-colors"
+              }
+            >
+              {state.linkedBank ? (
+                <>
+                  <Icon name="landmark" size={12} />
+                  {state.linkedBank.bank} ****{state.linkedBank.last4}
+                </>
+              ) : (
+                <>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0D1B22] opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0D1B22]" />
+                  </span>
+                  <Icon name="landmark" size={15} />
+                  Link your bank
+                </>
+              )}
+            </button>
+            <span className="text-xs font-mono text-[#7C93A6] uppercase tracking-wider">
+              Cycle day {state.cycleDay} / {CYCLE_LENGTH} · Total day {state.day}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-6 mb-6">
+          <div className="bg-[#132732] rounded-2xl p-7 border border-white/5">
+            <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-1">Available balance</p>
+            <p className="font-display font-semibold text-4xl mb-6 tabular-nums">{fmt(state.balance)}</p>
+
+            {state.linkedBank ? (
+              <>
+                <div className="relative h-40 rounded-xl overflow-hidden bg-[#0D1B22] border border-white/5">
+                  <div
+                    className="absolute bottom-0 left-0 right-0 transition-all duration-500 ease-out"
+                    style={{ height: `${tankPct}%`, background: "linear-gradient(180deg, #3FA796 0%, #2C7A72 100%)" }}
+                  />
+                  {crunchPrediction && (
+                    <div
+                      className="absolute left-0 right-0 border-t border-dashed border-[#F2726F]/70 flex items-center"
+                      style={{
+                        bottom: `${Math.max(
+                          0,
+                          Math.min(
+                            100,
+                            ((state.balance - DAILY_BASE_SPEND * (crunchPrediction - state.cycleDay)) / state.source.amount) * 100
+                          )
+                        )}%`,
+                      }}
+                    >
+                      <span className="text-[10px] font-mono text-[#F2726F] bg-[#0D1B22] px-1.5 -mt-2 ml-2 rounded">
+                        predicted low · day {crunchPrediction}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-5 h-12">
+                  <Sparkline data={state.history} />
+                </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-dashed border-[#D8B25E]/40 bg-[#D8B25E]/5 p-6 flex flex-col items-center text-center gap-3">
+                <Icon name="landmark" size={20} className="text-[#D8B25E]" />
+                <p className="text-sm font-display font-medium">Link your bank to activate Buffer</p>
+                <p className="text-xs text-[#7C93A6] leading-relaxed max-w-xs">
+                  Available balance mirrors your linked bank account — there's nothing to track, predict, or
+                  protect until it's connected.
+                </p>
+                <button
+                  onClick={() => setScreen("bank")}
+                  className="bg-[#D8B25E] hover:bg-[#e6c076] text-[#0D1B22] font-display font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+                >
+                  Link bank account
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="bg-[#132732] rounded-2xl p-6 border border-white/5 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Icon name="shield-check" size={16} className="text-[#D8B25E]" />
+                <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6]">Buffer (USDT)</p>
+              </div>
+              <p className="font-display font-semibold text-3xl mb-4 tabular-nums">{fmt(state.buffer)}</p>
+              <div className="h-2 rounded-full bg-[#0D1B22] overflow-hidden">
+                <div className="h-full transition-all duration-500" style={{ width: `${bufferPct}%`, background: "#D8B25E" }} />
+              </div>
+              <p className="text-xs text-[#7C93A6] mt-3 leading-relaxed">
+                {LOCK_RATE * 100}% of every payout is swept into a stablecoin buffer automatically. Releases
+                back to naira carry a {FEE_RATE * 100}% release fee.
+              </p>
+            </div>
+
+            <div className="bg-[#132732] rounded-2xl p-6 border border-white/5">
+              <div className="flex items-center gap-2 mb-1">
+                {state.aiPending ? (
+                  <Icon name="loader" size={16} className="text-[#F2726F] animate-spin" />
+                ) : (
+                  <Icon name="sparkles" size={16} className="text-[#F2726F]" />
+                )}
+                <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6]">AI prediction</p>
+              </div>
+              <p className="font-display font-medium text-base leading-snug mt-2">
+                {crunchPrediction
+                  ? state.released
+                    ? "Buffer already released to cover this cycle's crunch."
+                    : `Projected to run low around day ${crunchPrediction}.`
+                  : "Spending pace looks steady — no crunch predicted yet."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <SavingsSummaryCard state={state} onOpen={() => setScreen("savings")} />
+
+        <WalletPanel state={state} setState={setState} onOpenBank={() => setScreen("bank")} />
+
+        <div className="flex items-center gap-3 mb-2 flex-wrap">
+          <button
+            onClick={advanceDay}
+            disabled={!state.linkedBank}
+            className="flex items-center gap-1.5 bg-[#3FA796] hover:bg-[#379186] disabled:bg-[#3FA796]/25 disabled:cursor-not-allowed disabled:hover:bg-[#3FA796]/25 text-[#0D1B22] font-display font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
+          >
+            <Icon name="zap" size={15} /> Advance 1 day
+          </button>
+          <button
+            onClick={advanceWeek}
+            disabled={!state.linkedBank}
+            className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 border border-white/10 font-display font-medium text-sm px-4 py-2.5 rounded-lg transition-colors"
+          >
+            Advance 7 days <Icon name="chevron-right" size={15} />
+          </button>
+          <button
+            onClick={reset}
+            className="flex items-center gap-1.5 text-[#7C93A6] hover:text-[#EAF4F1] text-sm px-3 py-2.5 rounded-lg transition-colors ml-auto"
+          >
+            <Icon name="rotate-ccw" size={14} /> Switch income source
+          </button>
+        </div>
+        <p className="text-xs text-[#4F6373] mb-6 leading-relaxed">
+          {state.linkedBank
+            ? "Advance the days to watch Buffer automatically predict a cash crunch and top up your balance from your buffer when it happens — no action needed from you."
+            : "Link a bank above to start advancing days."}
+        </p>
+
+        <div className="bg-[#132732] rounded-2xl border border-white/5 p-6">
+          <p className="text-xs font-mono uppercase tracking-wider text-[#7C93A6] mb-4">Activity</p>
+          <div className="flex flex-col gap-3">
+            {recentLog.length === 0 ? (
+              <p className="text-sm text-[#4F6373] italic">Nothing yet — link your bank to get started.</p>
+            ) : (
+              recentLog.map((entry, i) => (
+                <div key={i} className="flex items-start gap-3 text-sm">
+                  <span className="font-mono text-xs text-[#4F6373] w-12 shrink-0 pt-0.5">Day {entry.day}</span>
+                  <span className={logColor(entry)}>{entry.text}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const rootEl = document.getElementById("root");
+ReactDOM.createRoot(rootEl).render(<BufferDemo />);
+</script>
+</body>
+</html>
